@@ -1,0 +1,47 @@
+version: '3.8'
+
+volumes: 
+  postgres_volume:
+
+networks: 
+  kube-news-wireless: 
+    driver: bridge
+
+services:
+  postgres: 
+    image: postgres
+    ports:
+     - 5432:5432
+    networks:
+     - kube-news-wireless
+    volumes:
+     - postgres_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: senhapostgres
+      POSTGRES_USER: userpostgres
+
+  kube-news-page:
+    image: kube-news-js
+    ports: 
+     - 8080:8080
+    networks: 
+     - kube-news-wireless
+    environment: 
+      DB_DATABASE: postgres
+      DB_USERNAME: userpostgres
+      DB_PASSWORD: senhapostgres
+      DB_HOST: postgres
+    depends_on: 
+     - postgres
+  
+  pgadmin: 
+    image: dpage/pgadmin4
+    ports:
+     - 80:80
+    networks: 
+     - kube-news-wireless
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: user@domain.com
+      PGADMIN_DEFAULT_PASSWORD: SuperSecret
+    depends_on: 
+     - postgres
