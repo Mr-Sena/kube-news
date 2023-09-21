@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: 
+  name: postgres-pvc
+spec: 
+  storageClassName: manual
+  accessModes: 
+    - ReadWriteOnce
+  resources: 
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata: 
+  name: local-storage
+spec: 
+  storageClassName: manual
+  capacity: 
+    storage: 1Gi
+  accessModes: 
+    - ReadWriteOnce
+  hostPath: 
+    path: "/mnt/k8s/volumes/postgres"
+    type: DirectoryOrCreate
+
+# Síntese: O Volume é provisionado dentro de um cluster, que garante que os dados sejam persistidos durante a sua existência.
+# Quando o cluster é configurado dentro um container k3d, por exemplo; esse dados podem ser removidos, quando o cluster/container é excluído.
+# Uma vez que que o próprio container do cluster não possui volume para persistir os seus próprios dados armazenados.

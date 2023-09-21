@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: kube-news-js
+spec: 
+  selector: 
+    matchLabels: 
+      app: kube-news
+  template: 
+    metadata: 
+      labels: 
+        app: kube-news
+    spec: 
+      containers: 
+        - name: kube-news-js
+          image: joaoinvernal/kube-news-js:v1
+          ports: 
+            - containerPort: 8080 
+          env: 
+            - name: DB_DATABASE
+              value: postgres
+            - name: DB_USERNAME
+              value: userpostgres
+            - name: DB_PASSWORD
+              value: SecretPost
+            - name: DB_HOST
+              value: postgres-service
+
+---
+
+apiVersion: v1
+kind: Service
+metadata: 
+  name: kube-news-gateway
+spec: 
+  selector: 
+    app: kube-news
+  ports: 
+    - port: 80
+      targetPort: 8080
+  type: LoadBalancer
